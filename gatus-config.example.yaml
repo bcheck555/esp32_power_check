@@ -1,0 +1,31 @@
+# Gatus server-side configuration for the ESP32-C3 push heartbeat.
+#
+# Merge this into your Gatus config.yaml (or into any *.yaml under
+# GATUS_CONFIG_PATH). Nothing here runs on the ESP32.
+#
+# The device sends, every 30 seconds and immediately after boot:
+#
+#   POST <GATUS_BASE_URL>/api/v1/endpoints/<group>_<name>/external?success=true
+#   Authorization: Bearer <token>
+#
+# `{key}` is derived by Gatus from "<group>_<name>", lower-cased patterns
+# aside: spaces, '/', '_', ',', '.', '#' and '&' in either part become '-'.
+#
+# With the values below the key is:  building_xiao-power-monitor
+# and it must be entered on the device as GATUS_ENDPOINT_KEY.
+#
+# heartbeat.interval must be >= 10s. Keep it comfortably larger than the
+# device's 30s send interval so a single missed heartbeat does not flap;
+# if no update arrives within this window, Gatus marks the endpoint unhealthy.
+
+external-endpoints:
+  - name: xiao-power-monitor
+    group: building
+    token: "replace-with-the-same-value-as-GATUS_TOKEN"
+    heartbeat:
+      interval: 90s
+    alerts:
+      - type: discord
+        send-on-resolved: true
+        failure-threshold: 3
+        success-threshold: 2

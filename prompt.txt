@@ -1,0 +1,50 @@
+I have a Seeed Studio XIAO ESP32-C3 connected by USB to this Linux machine.
+
+Goal:
+Build and flash firmware that uses this ESP32 as a building-power monitor.
+
+Behavior:
+- Connect to my wifi network over 2.4 GHz Wi-Fi.
+- Send a push-based heartbeat to my Gatus server every 30 seconds.
+- Use the official current Gatus push-based monitoring API and configuration. Do not guess the endpoint URL, authentication method, or payload format.
+- Reconnect automatically after Wi-Fi or cellular interruptions.
+- Send a heartbeat immediately after boot.
+- Log boot count, uptime, Wi-Fi RSSI, local IP address, and HTTP response code to the serial console.
+- Do not expose an inbound web server.
+- Make the firmware robust enough to run unattended.
+
+Use PlatformIO CLI with the Arduino framework.
+
+First inspect this Linux machine and determine:
+1. whether the ESP32 is detected by USB
+2. which /dev/ttyACM* or /dev/ttyUSB* device it uses
+3. whether my current user has permission to access it
+4. whether PlatformIO is installed
+5. whether the correct PlatformIO board identifier exists for Seeed Studio XIAO ESP32-C3
+
+Project structure should separate secrets from source code:
+- platformio.ini
+- src/main.cpp
+- include/secrets.h
+- include/secrets.example.h
+- .gitignore
+
+Do not put credentials directly in source control.
+Generate secrets.example.h and secrets.h placeholders for:
+- WIFI_SSID
+- WIFI_PASSWORD
+- GATUS push URL
+- GATUS token/secret if required
+
+Add include/secrets.h to .gitignore.
+
+Once the project builds, stop and tell me which secret values I need to populate.
+
+After I populate them, build the project, flash the ESP32, open the serial monitor, and verify:
+- successful boot
+- Wi-Fi association
+- DHCP address
+- successful HTTPS connection
+- multiple successful Gatus heartbeats
+
+If build, upload, USB, serial, TLS, Wi-Fi, or Gatus communication fails, diagnose the actual error and fix it rather than guessing.

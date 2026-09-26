@@ -1,0 +1,12 @@
+# Local secrets - never commit
+include/secrets.h
+
+# PlatformIO build artifacts and local toolchains
+.pio/
+.platformio/
+.venv/
+
+# Editor/OS cruft
+.vscode/
+*.swp
+.DS_Store
