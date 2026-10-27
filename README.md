@@ -76,7 +76,7 @@ Edit `include/secrets.h` and set the required values:
 #define WIFI_SSID          "your-2.4-ghz-network"
 #define WIFI_PASSWORD      "your-wifi-password"
 
-#define GATUS_BASE_URL     "https://gatus.example.com"
+#define GATUS_BASE_URL     "https://gatus.ddns.net"
 #define GATUS_ENDPOINT_KEY "building_xiao-power-monitor"
 #define GATUS_TOKEN        "replace-with-the-same-token-used-by-gatus"
 ```
@@ -84,6 +84,13 @@ Edit `include/secrets.h` and set the required values:
 `GATUS_BASE_URL` may have a trailing slash; the firmware removes it before
 building the request URL. For HTTPS, use a DNS name present in the server
 certificate rather than a bare IP address.
+
+The Gatus server now uses HTTPS on port 443. The URL above uses that port
+automatically; `https://gatus.ddns.net:443` is equivalent. When updating an
+existing `include/secrets.h`, replace the old `http://` URL and remove port
+`8085`. Keep the endpoint key and token, and configure the trusted root CA below
+before rebuilding and flashing the device. Allow outbound TCP port 443 from
+the device network.
 
 ### Optional Wi-Fi networks
 
@@ -101,8 +108,16 @@ Use an empty password for an open network.
 
 ### HTTPS and NTP
 
-Verified HTTPS is the recommended production configuration. Add the PEM-encoded
-issuing root certificate to `include/secrets.h`:
+The template includes [`include/gatus_root_ca.h`](include/gatus_root_ca.h),
+which trusts ISRG Root X1 for the Let's Encrypt chain served by
+`gatus.ddns.net`. For an existing `include/secrets.h`, add:
+
+```cpp
+#include "gatus_root_ca.h"
+```
+
+For a server using another CA, replace that include with its PEM-encoded root
+certificate:
 
 ```cpp
 #define GATUS_ROOT_CA \

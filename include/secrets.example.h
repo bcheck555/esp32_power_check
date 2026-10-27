@@ -33,18 +33,20 @@
 //
 // For https:// this MUST be a DNS hostname that matches the certificate's SAN
 // (e.g. "https://gatus.example.com"), not a bare IP address - hostname
-// verification would fail against an IP-based URL.
-#define GATUS_BASE_URL      "http://your-gatus-host:8085"
+// verification would fail against an IP-based URL. HTTPS defaults to port 443;
+// do not retain the former HTTP port 8085.
+#define GATUS_BASE_URL      "https://gatus.ddns.net"
 #define GATUS_ENDPOINT_KEY  "replace-with-group_name"
 #define GATUS_TOKEN         "replace-with-the-external-endpoint-token"
 
 // ---------------------------------------------------------------------------
 // TLS (only relevant when GATUS_BASE_URL is https://)
 // ---------------------------------------------------------------------------
-// The issuing root CA, PEM-encoded.  Required for verified https:// - the
-// device pins this CA and verifies the chain + hostname.  For Let's Encrypt
-// that is ISRG Root X1; for a private CA it is your own root.  The device also
+// Trust ISRG Root X1 for the Let's Encrypt chain served by gatus.ddns.net.
+#include "gatus_root_ca.h"
+// The device verifies the certificate chain + hostname. The device also
 // needs a valid clock, which it obtains over NTP (see below).
+// For another CA, replace the include above with its PEM-encoded root:
 //
 // #define GATUS_ROOT_CA \
 //   "-----BEGIN CERTIFICATE-----\n" \
